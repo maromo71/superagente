@@ -1,17 +1,11 @@
-# Use uma imagem Python como base
-FROM python:3.9-slim
+FROM python:3.12-slim-buster
 
-# Configurar o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos necessários
-COPY . /app
+COPY requirements.txt .
 
-# Instalar dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expor a porta padrão do Flask
-EXPOSE 5000
+COPY . .
 
-# Comando para iniciar o aplicativo
-CMD ["gunicorn", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
