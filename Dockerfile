@@ -1,14 +1,18 @@
-FROM python:3.12-slim-buster
+# Use uma imagem Python como base
+FROM python:3.9-slim
 
+# Configurar o diretório de trabalho
 WORKDIR /app
 
-COPY requirements.txt .
+# Copiar os arquivos necessários
+COPY . /app
 
+# Instalar dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Expor a porta padrão do Flask
+EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+# Comando para iniciar o aplicativo
+CMD ["gunicorn", "app:app"]
 
-# Configurar a chave API do google
-ENV GOOGLE_API_KEY="AIzaSyDBxkNd77mrygNI7orDEGymfUKl6rk2p1A"
