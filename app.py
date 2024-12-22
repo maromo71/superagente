@@ -1,12 +1,20 @@
 from flask import Flask, render_template, request, send_file
+from dotenv import load_dotenv
 import google.generativeai as genai
 import os
 import uuid
 
+# Carrega as variáveis de ambiente
+load_dotenv()
+
 app = Flask(__name__)
 
 # Configuração da API do Gemini
-genai.configure(api_key="AIzaSyDBxkNd77mrygNI7orDEGymfUKl6rk2p1A")
+google_api_key = os.getenv("GOOGLE_API_KEY")
+if not google_api_key:
+    raise EnvironmentError("A variável de ambiente GOOGLE_API_KEY não está definida.")
+
+genai.configure(api_key=google_api_key)
 model = genai.GenerativeModel('gemini-2.0-flash-exp') 
 
 def criar_agente(nome, especialidade, responsabilidades, habilidades):
