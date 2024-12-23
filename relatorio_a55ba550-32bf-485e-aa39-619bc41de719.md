@@ -1,50 +1,47 @@
 
-        # Relatório Final #
-        ## Tarefa ##
-        Criar uma aplicação estilo todo-list
-        ## Agentes ##
+# Relatório Final
+## Tarefa
+Criar uma aplicação estilo todo-list
+## Agentes
         
-            ### Analista de Requisitos ###
-            - **Especialidade:** Levantamento de Requisitos
-            - **Responsabilidades:** Criar os rquisitos funcionais e não funcionais para o desenvolvimento do aplicativo lista de tarefas, abrangente com login e senha, e gerenciamento das tarefas por usuário.
-            - **Habilidades:** Especialista em Metodologias Ágeis
+### Analista de Requisitos
+ - **Especialidade:** Levantamento de Requisitos
+ - **Responsabilidades:** Criar os rquisitos funcionais e não funcionais para o desenvolvimento do aplicativo lista de tarefas, abrangente com login e senha, e gerenciamento das tarefas por usuário.
+- **Habilidades:** Especialista em Metodologias Ágeis
             
-            ### Desenvolvedor Flutter ###
-            - **Especialidade:** Desenvolvimento de Sistemas em Flutter com uso do Firebase
-            - **Responsabilidades:** Criar toda a definição da estrutura detalhada e os códigos necessários para cada parte do programa, deve detalhar o passo a passo para que um novato possa implementar.
-            - **Habilidades:** Excelencia em Codificação Flutter e Dart
+### Desenvolvedor Flutter ###
+- **Especialidade:** Desenvolvimento de Sistemas em Flutter com uso do Firebase
+- **Responsabilidades:** Criar toda a definição da estrutura detalhada e os códigos necessários para cada parte do programa, deve detalhar o passo a passo para que um novato possa implementar.
+- **Habilidades:** Excelencia em Codificação Flutter e Dart
             
-        ## Coordenação ##
-        sequencial
+## Coordenação ##
+sequencial
 
-        ## Resultados ##
+## Resultados ##
         
-            ### **Passo 1 ###
-            Ativar o Analista de Requisitos**
+### **Passo 1 ###
+Ativar o Analista de Requisitos**
             
-            ### Superagente ###
-            Perfeito! Os resultados de cada agente foram muito bons, e podemos utilizar para começar a implementar o projeto.
+### Superagente ###
+Perfeito! Os resultados de cada agente foram muito bons, e podemos utilizar para começar a implementar o projeto.
             
-            ### Analista de Requisitos ###
-            
-            
-            ### nome_agente ###
-            Desenvolvedor Flutter
-            
-            ### resultado_agente ###
+### Analista de Requisitos ###
             
             
-            ### **Requisitos Funcionais ###
-            **
+### nome_agente ###
+Desenvolvedor Flutter
             
-            ### 1.  **Autenticação ###
-            **
+### resultado_agente ###
             
-            ### *   **RF-01 ###
-            ** O usuário deve ser capaz de criar uma nova conta com um endereço de e-mail e senha.
             
-            ### *   **RF-02 ###
-            ** O usuário deve ser capaz de fazer login com seu endereço de e-mail e senha.
+### **Requisitos Funcionais ###
+            
+### 1.  **Autenticação ###
+### *   **RF-01 ###
+** O usuário deve ser capaz de criar uma nova conta com um endereço de e-mail e senha.
+            
+### *   **RF-02 ###
+** O usuário deve ser capaz de fazer login com seu endereço de e-mail e senha.
             
             ### *   **RF-03 ###
             ** O usuário deve ser capaz de sair da sua conta.

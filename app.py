@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import os
 import uuid
+import time # Importar a biblioteca time
 
 # Carrega as variáveis de ambiente
 load_dotenv()
@@ -35,37 +36,41 @@ def criar_agente(nome, especialidade, responsabilidades, habilidades):
         "habilidades": habilidades,
     }
 
-def executar_tarefa(tarefa, agentes, coordenação):
-        """
-        Executa uma tarefa passo a passo, pedindo para cada agente executar sua parte e retorna os resultados.
+def executar_tarefa(tarefa, agentes, coordenação, num_rodadas, funcao_superagente):
+    """
+    Executa uma tarefa passo a passo, pedindo para cada agente executar sua parte e retorna os resultados.
 
-        :param tarefa: tarefa a ser executada
-        :param agentes: lista de agentes a serem utilizados
-        :param coordenação: como os agentes devem ser coordenados
-        :return: um dicionário com os resultados, onde a chave é o nome do agente e o valor é o resultado da execução
-        """
-        resultados = {}
-        prompt_inicial = f"""Você é um superagente. Sua tarefa é: {tarefa}. Você deve coordenar os seguintes agentes de forma {coordenação}. Os agentes são:"""
+    :param tarefa: tarefa a ser executada
+    :param agentes: lista de agentes a serem utilizados
+    :param coordenação: como os agentes devem ser coordenados
+    :param num_rodadas: número de rodadas de conversas entre agentes
+    :param funcao_superagente: descrição detalhada da função do superagente
+    :return: um dicionário com os resultados, onde a chave é o nome do agente e o valor é o resultado da execução
+    """
+    resultados = {}
+    prompt_base = f"""Você é um superagente. Sua função é: {funcao_superagente}. Sua tarefa é: {tarefa}. Você deve coordenar os seguintes agentes de forma {coordenação}. Os agentes são:"""
 
-        for agent in agentes:
-           prompt_inicial += f"""
-             - **Agente**: {agent['nome']}.
-             - **Especialidade**: {agent['especialidade']}.
-             - **Responsabilidades**: {agent['responsabilidades']}.
-             - **Habilidades**: {agent['habilidades']}.
+    for agent in agentes:
+        prompt_base += f"""
+            - **Agente**: {agent['nome']}.
+            - **Especialidade**: {agent['especialidade']}.
+            - **Responsabilidades**: {agent['responsabilidades']}.
+            - **Habilidades**: {agent['habilidades']}.
             """
+    
+    prompt_base += "Agora, execute a tarefa passo a passo, pedindo para cada agente executar sua parte e me retorne os resultados no seguinte formato: ```nome_agente: resultado_agente```"
 
-        prompt_inicial += "Agora, execute a tarefa passo a passo, pedindo para cada agente executar sua parte e me retorne os resultados no seguinte formato: ```nome_agente: resultado_agente```"
-
+    for rodada in range(num_rodadas):
+        prompt_inicial = f"""{prompt_base} \n Esta é a rodada {rodada + 1}. """
         resultados_str = model.generate_content(prompt_inicial).text
         linhas = resultados_str.strip().split("\n")
         for linha in linhas:
-           if ":" in linha:
-              nome_agente, resultado_agente = linha.split(":",1)
-              resultados[nome_agente.strip()] = resultado_agente.strip()
-        return resultados
+            if ":" in linha:
+                nome_agente, resultado_agente = linha.split(":",1)
+                resultados[nome_agente.strip()] = resultado_agente.strip()
+    return resultados
 
-def gerar_relatorio(tarefa, agentes, coordenação, resultados, analise_superagente):
+def gerar_relatorio(tarefa, agentes, coordenação, resultados, analise_superagente, funcao_superagente):
         """
         Gera um relatório final com todos os dados da tarefa, agentes, coordenação, resultados e análise do superagente.
 
@@ -78,6 +83,9 @@ def gerar_relatorio(tarefa, agentes, coordenação, resultados, analise_superage
         """
         relatorio_texto = f"""
         # Relatório Final #
+        ## Função do Superagente ##
+        {funcao_superagente}
+
         ## Tarefa ##
         {tarefa}
         ## Agentes ##
@@ -148,19 +156,22 @@ def index():
             habilidades = request.form[f"habilidades_agente_{i}"]
             agentes.append(criar_agente(nome,especialidade,responsabilidades,habilidades))
         coordenação = request.form["coordenação"]
+        num_rodadas = int(request.form["num_rodadas"])
+        funcao_superagente = request.form["funcao_superagente"]
 
-        resultados = executar_tarefa(tarefa, agentes, coordenação)
-        analise = model.generate_content(f"""Analise o relatório abaixo e dê sugestões de melhorias de como o sistema pode ser melhorado. Relatório: {resultados}""" )
+
+        resultados = executar_tarefa(tarefa, agentes, coordenação, num_rodadas, funcao_superagente)
+        analise = model.generate_content(f"""Analise o relatório abaixo e dê sugestões de melhorias de como o sistema pode ser melhorado. Relatório: {resultados}, função do superagente: {funcao_superagente}""" )
         analise_superagente = analise.text
-        relatorio = gerar_relatorio(tarefa, agentes, coordenação, resultados, analise_superagente)
-
+        relatorio = gerar_relatorio(tarefa, agentes, coordenação, resultados, analise_superagente, funcao_superagente)
+        time.sleep(1)
         # Gera um nome de arquivo único para o relatório
-        relatorio_filename = f"relatorio_{uuid.uuid4()}.md"
+        relatorio_filename = f"relatorio_{uuid.uuid4()}.txt"
         # Salva o relatório em um arquivo temporário
         with open(relatorio_filename, "w", encoding="utf-8") as f:
             f.write(relatorio)
             
-        return send_file(relatorio_filename, as_attachment=True, download_name="relatorio.md")
+        return send_file(relatorio_filename, as_attachment=True, download_name="relatorio.txt")
     return render_template("index.html")
 
 if __name__ == "__main__":

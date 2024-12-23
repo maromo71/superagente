@@ -44,29 +44,46 @@
         </div>
     </header>
 
-    <main class="container content">
-        <form method="post">
-        <div class="mb-3">
-            <label for="tarefa" class="form-label">Descrição da Tarefa:</label>
-            <textarea id="tarefa" name="tarefa" rows="4" class="form-control" required></textarea>
-        </div>
+    <main class="container content mb-3">
+        <form id="mainForm" method="post">
+            <div class="mb-3">
+                <label for="tarefa" class="form-label">Descrição da Tarefa:</label>
+                <textarea id="tarefa" name="tarefa" rows="4" class="form-control" required></textarea>
+            </div>
 
-        <div class="mb-3">
-             <label for="num_agentes" class="form-label">Número de Agentes (1 a 5):</label>
-            <input type="number" id="num_agentes" name="num_agentes" min="1" max="5" class="form-control" required>
-        </div>
+            <div class="mb-3">
+                <label for="funcao_superagente" class="form-label">Função do Superagente:</label>
+                <textarea id="funcao_superagente" name="funcao_superagente" rows="4" class="form-control" required></textarea>
+            </div>
 
-        <div id="agentes-inputs">
-        </div>
+            <div class="mb-3">
+                <label for="num_rodadas" class="form-label">Número de Rodadas:</label>
+                <input type="number" id="num_rodadas" name="num_rodadas" min="1" value="1" class="form-control" required>
+            </div>
 
-        <div class="mb-3">
-          <label for="coordenação" class="form-label">Forma de Coordenação:</label>
-            <select id="coordenação" name="coordenação" class="form-select" required>
-               <option value="sequencial">Sequencial</option>
-               <option value="paralela">Paralela</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary mb-3">Executar</button>
+            <div class="mb-3">
+                 <label for="num_agentes" class="form-label">Número de Agentes (1 a 5):</label>
+                <input type="number" id="num_agentes" name="num_agentes" min="1" max="5" class="form-control" required>
+            </div>
+
+            <div id="agentes-inputs">
+            </div>
+
+            <div class="mb-3">
+              <label for="coordenação" class="form-label">Forma de Coordenação:</label>
+                <select id="coordenação" name="coordenação" class="form-select" required>
+                   <option value="sequencial">Sequencial</option>
+                   <option value="paralela">Paralela</option>
+                </select>
+            </div>
+            <div id="progress-container" style="display: none;" class="mb-3">
+                <div class="progress">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                </div>
+                <small id="progress-label" class="form-text text-muted">Gerando relatório...</small>
+             </div>
+
+             <button type="submit" class="btn btn-primary mb-3">Executar</button>
         </form>
     </main>
 
@@ -75,7 +92,59 @@
             <p>© 2024 - CogniLens: Insights orquestrados. Todos os direitos reservados</p>
         </div>
     </footer>
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('mainForm'); // Pegar o formulário pelo ID
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressLabel = document.getElementById('progress-label');
+
+          form.addEventListener('submit', (event) => {
+          event.preventDefault(); // Prevenir o envio padrão do formulário
+
+            progressContainer.style.display = 'block';
+             progressBar.style.width = '10%';
+            progressLabel.textContent = "Enviando dados...";
+
+            const formData = new FormData(form);
+
+            fetch('/', {
+                    method: 'POST',
+                    body: formData,
+                   })
+                  .then(response => {
+                       if (response.ok) {
+                           progressBar.style.width = '80%';
+                           progressLabel.textContent = "Gerando arquivo...";
+                           return response.blob(); // Converte a resposta em um blob
+                        }else {
+                            throw new Error('Erro na requisição.');
+                        }
+                  })
+                  .then(blob => {
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = "relatorio.txt";
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      window.URL.revokeObjectURL(url);
+                       progressBar.style.width = '100%';
+                      progressLabel.textContent = "Download pronto!";
+
+                  })
+                  .catch(error => {
+                        console.error('Erro:', error);
+                         progressLabel.textContent = "Erro ao gerar o relatório.";
+                    });
+
+        });
+    });
+
+
+</script>
+  <script>
       const numAgentesInput = document.getElementById('num_agentes');
       const agentesInputsDiv = document.getElementById('agentes-inputs');
 
